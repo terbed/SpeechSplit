@@ -278,25 +278,23 @@ class Decoder_4(nn.Module):
 
         return decoder_output         
     
-    
 
 class Generator_3(nn.Module):
     """SpeechSplit model"""
     def __init__(self, hparams):
         super().__init__()
         
-        self.encoder_1 = Encoder_7(hparams)
-        self.encoder_2 = Encoder_t(hparams)
+        self.encoder_1 = Encoder_7(hparams)     # Content and pitch
+        self.encoder_2 = Encoder_t(hparams)     # Rhythm encoder
         self.decoder = Decoder_3(hparams)
     
         self.freq = hparams.freq
         self.freq_2 = hparams.freq_2
         self.freq_3 = hparams.freq_3
 
-
     def forward(self, x_f0, x_org, c_trg):
         
-        x_1 = x_f0.transpose(2,1)
+        x_1 = x_f0.transpose(2, 1)
         codes_x, codes_f0 = self.encoder_1(x_1)
         code_exp_1 = codes_x.repeat_interleave(self.freq, dim=1)
         code_exp_3 = codes_f0.repeat_interleave(self.freq_3, dim=1)
@@ -304,7 +302,7 @@ class Generator_3(nn.Module):
         x_2 = x_org.transpose(2,1)
         codes_2 = self.encoder_2(x_2, None)
         code_exp_2 = codes_2.repeat_interleave(self.freq_2, dim=1)
-        
+        #print(f"\nEncoder code sizes: content:\n{code_exp_1.shape}, rythm: {code_exp_2.shape}, pitch: {code_exp_3.shape}, speaker: {c_trg.unsqueeze(1).expand(-1,x_1.size(-1),-1).shape}")
         encoder_outputs = torch.cat((code_exp_1, code_exp_2, code_exp_3, 
                                      c_trg.unsqueeze(1).expand(-1,x_1.size(-1),-1)), dim=-1)
         
