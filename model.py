@@ -296,12 +296,16 @@ class Generator_3(nn.Module):
         
         x_1 = x_f0.transpose(2, 1)
         codes_x, codes_f0 = self.encoder_1(x_1)
+        print(f"\nEncoder code sizes: content:\n{codes_x.shape}, pitch: {codes_f0.shape}")
+        print(f"\nEncoder code: content:\n{codes_x}, \n\npitch: {codes_f0}")
+
         code_exp_1 = codes_x.repeat_interleave(self.freq, dim=1)
         code_exp_3 = codes_f0.repeat_interleave(self.freq_3, dim=1)
         
         x_2 = x_org.transpose(2,1)
         codes_2 = self.encoder_2(x_2, None)
         code_exp_2 = codes_2.repeat_interleave(self.freq_2, dim=1)
+        print(f"\nEncoder code: ryxthm:\n{codes_2.shape} \n{codes_2}")
         #print(f"\nEncoder code sizes: content:\n{code_exp_1.shape}, rythm: {code_exp_2.shape}, pitch: {code_exp_3.shape}, speaker: {c_trg.unsqueeze(1).expand(-1,x_1.size(-1),-1).shape}")
         encoder_outputs = torch.cat((code_exp_1, code_exp_2, code_exp_3, 
                                      c_trg.unsqueeze(1).expand(-1,x_1.size(-1),-1)), dim=-1)
