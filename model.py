@@ -276,8 +276,34 @@ class Decoder_4(nn.Module):
         
         decoder_output = self.linear_projection(outputs)
 
-        return decoder_output         
-    
+        return decoder_output
+
+
+class GetCodes(nn.Module):
+    """Returns content, pitch and rhythm codes"""
+
+    def __init__(self, hparams):
+        super().__init__()
+
+        self.encoder_1 = Encoder_7(hparams)  # Content and pitch
+        self.encoder_2 = Encoder_t(hparams)  # Rhythm encoder
+        self.decoder = Decoder_3(hparams)
+
+        self.freq = hparams.freq
+        self.freq_2 = hparams.freq_2
+        self.freq_3 = hparams.freq_3
+
+    def forward(self, x_f0, x_org, c_trg):
+        x_1 = x_f0.transpose(2, 1)
+        codes_x, codes_f0 = self.encoder_1(x_1)
+
+        x_2 = x_org.transpose(2, 1)
+        codes_2 = self.encoder_2(x_2, None)
+
+        encoder_outputs = torch.cat((codes_x, codes_f0, codes_2), dim=-1)
+
+        return encoder_outputs.detach()
+
 
 class Generator_3(nn.Module):
     """SpeechSplit model"""
@@ -331,7 +357,7 @@ class Generator_3(nn.Module):
         
         return codes_2
 
-    
+
     
 class Generator_6(nn.Module):
     """F0 converter
