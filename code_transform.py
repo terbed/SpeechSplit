@@ -113,7 +113,7 @@ def get_codes(wav):
 for name in fnames:
     print(f"Working on {name}...")
     current_utter_code1 = name.split("_")[1]
-    current_utter_code2 = name.split("_")[1]
+    current_utter_code2 = name.split("_")[2]
 
     trg_name = name.split("_")
     trg_name[0] = trg_speaker
@@ -129,7 +129,7 @@ for name in fnames:
         trg_codes = trg_codes.cpu().numpy()
         src_codes = src_codes.cpu().numpy()
         assert src_codes.shape == trg_codes.shape, "The size of the codes must equal!"
-        database.append({"src": src_codes, "trg": trg_codes})
+        database.append({"src": src_codes, "trg": trg_codes, "uttr_id": f"{current_utter_code1}_{current_utter_code2}"})
 
 # Store data (serialize)
 with open('dbase.pkl', 'wb') as handle:
