@@ -51,7 +51,7 @@ else:
 
 prng = RandomState(10)
 # x, fs = sf.read(os.path.join(wav_path))
-x, fs  = lr.load(os.path.join(wav_path), sr=16000)
+x, fs = lr.load(os.path.join(wav_path), sr=16000)
 assert fs == 16000
 if x.shape[0] % 256 == 0:
     x = np.concatenate((x, np.array([1e-06])), axis=0)
@@ -85,7 +85,7 @@ S = S[np.newaxis,:192,:]
 S, _ = pad_seq_to_2(S, 192)
 uttr = torch.from_numpy(S.astype(np.float32)).to(device)
 
-f0_onehot = tr.zeros_like(f0_onehot)
+#f0_onehot = tr.zeros_like(f0_onehot)
 uttr_f0 = torch.cat((uttr, f0_onehot), dim=-1)
 
 # Generate back from components
